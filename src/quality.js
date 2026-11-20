@@ -1,0 +1,10 @@
+/* Exact finite-state analysis, not a subjective fun score. */
+const Quality=(()=>{const E=typeof module!=='undefined'&&module.exports?require('./engine.js'):Engine;
+ function evaluate(l,limit=30000){E.validate(l);const r=E.search(l,undefined,null,'full',limit);if(!r.complete)return {complete:false,states:r.states.size,solvable:r.route?true:null,warning:'达到状态上限，不能判定无解、最优性或死局率。'};
+ const mode=(m,fixed=null)=>{const q=E.search(l,undefined,fixed,m,limit);return {complete:q.complete,shortest:q.complete?q.shortest:null,solvable:q.route?true:q.complete?false:null,frontier:q.complete?q.frontier:null};};
+ let meaningful=0,choiceCount=0;for(const [k,s] of r.states){if(!r.viable.has(k)||E.won(l,s))continue;for(let i=0;i<l.stations.length;i++){if(l.stations[i][0]!==s.node||s.choices[i]!==-1)continue;choiceCount++;if([0,1].every(option=>{const t=E.step(l,s,{kind:'choose',index:i,option});return t.ok&&r.viable.has(E.key(t.state));}))meaningful++;}}
+ const metrics={complete:true,solvable:r.shortest!==null,states:r.states.size,dead:r.dead,deadRatio:r.dead/r.states.size,profiles:r.profiles.size,shortest:r.shortest,frontier:r.frontier,choiceContexts:choiceCount,dualViable:meaningful,route:r.route,optimal:r.optimal,ablations:{alwaysA:mode('full',0),alwaysB:mode('full',1),tokensOnly:mode('token_only'),echoesOnly:mode('echo_only'),noRelay:mode('no_relay'),noGates:mode('no_gates')}};
+ const warnings=[];if(!metrics.solvable)warnings.push('关卡无解');if(metrics.deadRatio>.65)warnings.push('死局状态比例高：建议提供撤销或调整资源');if(metrics.solvable&&metrics.profiles<2)warnings.push('成功选择组合少，策略空间可能过窄');if(metrics.solvable&&(metrics.ablations.alwaysA.solvable||metrics.ablations.alwaysB.solvable))warnings.push('固定选项策略可通关：检查是否过于机械');if(Object.values(l.gates||{}).some(gs=>gs.some(g=>g.sources.length))&&metrics.ablations.noRelay.solvable)warnings.push('远端共鸣并非通关所必需（仍可能改善效率）');if(metrics.frontier.length<2)warnings.push('步数/消耗目标未形成多点帕累托前沿');return {...metrics,warnings};
+ }
+ return {evaluate};})();
+if(typeof module!=='undefined'&&module.exports)module.exports=Quality;
