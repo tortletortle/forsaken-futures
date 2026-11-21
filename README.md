@@ -1,14 +1,21 @@
 # 未被选择的世界 / Forsaken Futures
 
-Recovered V1.7 production-code baseline. All original `src/` files, the five level definitions, build script, and standalone HTML are byte-verified against the preserved local V1.7 Git bundle. Run `python build.py`, then open `dist/index.html` in a browser. No external API is required.
+V1.8 development branch: counterfactual decision archive and a cleaner separation between the main game and research tools.
 
-Recovery status: historical test scripts, full benchmark archives and screenshots are not yet completely mirrored. V1.8 source has not been recovered. This is not a V1.8 or V1.9 release.
+## Run
 
+Run python build.py, then open dist/index.html in a browser. The game has no external API dependency.
 
-## V1.7 design and verification records
+Run the focused V1.8 logic tests with node tests/v18.test.cjs.
 
-- `DESIGN_V17.md` — V1.7 design scope and experiment protocol.
-- `TEST_REPORT_V17.md` — V1.7 focused automated test report.
-- `REGRESSION_REPORT_V17.md` — compatibility and regression record.
+## V1.8 changes
 
-These records are archived documentation; they do not imply that the full historical benchmark archive or all screenshots have been mirrored.
+- Compare both possible outcomes at every future station: the portable ability gained and the permanent facility left behind.
+- Show direct and remote gate-cost changes caused by each facility.
+- Reconstruct already-made decisions from their pre-choice history state.
+- Locate a branch's facility edge and station on the world map.
+- Move 14 research-lab launchers into one grouped Research Archive dialog without changing their DOM IDs.
+
+## Verification boundary
+
+The focused V1.8 Node tests cover counterfactual evaluation and state immutability. Full build, Chromium/browser regression, mobile-device testing, and human playtesting remain pending. See DESIGN_V18.md, TEST_REPORT_V18.md, and REGRESSION_REPORT_V18.md.
